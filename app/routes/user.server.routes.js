@@ -1,4 +1,5 @@
-const users = require('../controllers/user.server.controllers');
+const users = require('../controllers/user.server.controllers'),
+      auth = require('../lib/middleware');
 
 module.exports = function(app){
   app.route('/api/v1/users')
@@ -12,5 +13,5 @@ module.exports = function(app){
     .post(users.login);
 
   app.route('/api/v1/users/logout')
-    .post(users.logout);
+    .post(auth.isAuthenticated, users.logout);
 }
