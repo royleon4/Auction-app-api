@@ -591,10 +591,7 @@
                     }
                   },
                   {
-                    "$ref": "#/components/schemas/email"
-                  },
-                  {
-                    "$ref": "#/components/schemas/password"
+                    "$ref" : "#/components/schemas/user"
                   }
                 ]
               }
