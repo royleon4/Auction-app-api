@@ -8,7 +8,7 @@ exports.connect = function(done){
 	state.pool = mysql.createPool({
 		host: "mysql3.csse.canterbury.ac.nz",
 		user: "coscc770",
-		password: "MaidForest53",
+		password: "123456789",
 		database: "coscc770"
 	});
 	done();

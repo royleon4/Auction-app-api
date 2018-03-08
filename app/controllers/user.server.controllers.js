@@ -1,16 +1,15 @@
 const users = require('../models/user.server.models'),
-  log = require('../lib/logger'),
+  log = require('../lib/logger')(),
   validator = require('../lib/validator');
 
   /**
    * create a new user, from a request body that follows the `User` schema definition
    */
 exports.create = function(req, res){
-  if (!validator.isValidSchema(req.body, 'components.schemas.user')) {
+  if (false){//!validator.isValidSchema(req.body, 'components.schemas.user')) {
       log.warn(`users.controller.create: bad user ${JSON.stringify(req.body)}`);
       return res.sendStatus(400);
-  }
-  else {
+  } else {
       let user = Object.assign({}, req.body);
       users.insert(user, (err, id) => {
           if (err)

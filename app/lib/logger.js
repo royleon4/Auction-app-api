@@ -10,7 +10,7 @@ const
 let
     logger,
     createLogger = options => {
-        options = Object.assign({name: 'crowdfunding'}, options); // name defaults to crowdfunding
+        options = Object.assign({name: 'auction'}, options); // name defaults to crowdfunding
         if (logger) return logger;
         logger = bunyan.createLogger(options);
         return logger;
