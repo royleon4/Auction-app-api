@@ -11,7 +11,7 @@ module.exports = function(){
 		res.status(200).json({"msg": "Server up"});
     });
 
-	// require('../app/routes/user.server.routes')(app);
+	require('../app/routes/user.server.routes')(app);
 	// require('../app/routes/auction.server.routes')(app);
 	require('../app/routes/admin.server.routes')(app);
 
