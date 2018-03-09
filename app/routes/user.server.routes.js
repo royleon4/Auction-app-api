@@ -1,4 +1,4 @@
-// const users = require('../controllers/user.server.controllers'),
+const users = require('../controllers/user.server.controllers');
 //       auth = require('../lib/middleware');
 
 module.exports = function(app){
