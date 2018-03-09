@@ -7,7 +7,7 @@ module.exports = function(){
 	app.use(bodyParser.json());
 
 	require('../app/routes/user.server.routes')(app);
-	// require('../app/routes/auction.server.routes')(app);
+	require('../app/routes/auction.server.routes')(app);
 	require('../app/routes/admin.server.routes')(app);
 
 	return app;

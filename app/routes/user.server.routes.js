@@ -5,10 +5,10 @@ module.exports = function(app){
   app.route('/api/v1/users')
     .post(users.create);
 
-  // app.route('/users/:id')
-  //   .get(users.get_one)
-  //   .patch(users.update);
-  //
+  app.route('/api/v1/users/:id')
+    .get(users.get_one)
+    .patch(auth.isAuthenticated, users.update);
+
   app.route('/api/v1/users/login')
     .post(users.login);
 

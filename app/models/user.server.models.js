@@ -14,7 +14,7 @@ const insert = function(user, done){
     const salt = crypto.randomBytes(64);
     const hash = getHash(user.password, salt);
 
-    console.log(salt);
+    //console.log(salt);
 
     let values = [[user.username, user.givenName, user.familyName, user.email, hash, salt.toString('hex')]];
 
@@ -103,10 +103,82 @@ const removeToken = (token, done) => {
     )
 };
 
+/**
+ * return user details, or null if user not found
+ *
+ * @param id
+ * @param done
+ */
+const getOne = (id, done) => {
+    let query = 'SELECT user_id, user_username, user_givenname, user_familyname, user_email FROM auction_user WHERE user_id=?';
+    db.get_pool().query(
+        query,
+        [id],
+        function(err, users){
+            if (err)
+                return done(err);
+            return done(err, users.length>0 ? users[0] : null);
+        }
+    )
+};
+
+/**
+ * get the user id associated with a given token, return null if not found
+ */
+const getIdFromToken = function(token, done){
+    if (token === undefined || token === null)
+        return done(true, null);
+    else {
+        db.get_pool().query(
+            'SELECT user_id FROM auction_user WHERE user_token=?',
+            [token],
+            function(err, result){
+                if (result.length === 1)
+                    return done(null, result[0].user_id);
+                return done(err, null);
+            }
+        )
+    }
+};
+
+/**
+ * update user
+ *
+ */
+const alter = function(id, user, done){
+
+    let query_string = '';
+    let values = [];
+
+    if(user.hasOwnProperty('password')){
+        const salt = crypto.randomBytes(64);
+        const hash = getHash(user.password, salt);
+
+        query_string = 'UPDATE auction_user SET user_username=?, user_givenname=?, user_familyname=?, user_email=?, user_password=?, user_salt=? WHERE user_id=?';
+        values = [user.username, user.givenname, user.familyname, user.email, hash, salt.toString('hex'), id];
+    }else{
+        query_string = 'UPDATE auction_user SET user_username=?, user_givenname=?, user_familyname=?, user_email=? WHERE user_id=?';
+        values = [user.username, user.givenname, user.familyname, user.email, id];
+    }
+
+    console.log(query_string, values);
+
+
+    db.get_pool().query(query_string,
+        values,
+        function(err, results){
+            done(err);
+        }
+    );
+};
+
 module.exports = {
     insert: insert,
     authenticate: authenticate,
     getToken: getToken,
     setToken: setToken,
-    removeToken: removeToken
+    removeToken: removeToken,
+    getOne: getOne,
+    getIdFromToken: getIdFromToken,
+    alter: alter
 };
