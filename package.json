@@ -10,6 +10,7 @@
     "express": "^4.16.2",
     "mysql": "^2.15.0",
     "swagger-parameters": "^1.3.1",
-    "z-schema": "^3.19.1"
+    "z-schema": "^3.19.1",
+    "convict": "^4.0.2"
   }
 }
