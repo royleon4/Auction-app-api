@@ -1,12 +1,10 @@
-const
-    convict = require('convict');
+const convict = require('convict');
 
-let
-    config = convict({
-        authToken: {
-            format: String,
-            default: 'X-Authorization'
-        }
+let config = convict({
+        // authToken: {
+        //     format: String,
+        //     default: 'X-Authorization'
+        // }
     });
 
 
