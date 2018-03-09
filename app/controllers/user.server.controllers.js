@@ -1,4 +1,4 @@
-// const users = require('../models/user.server.models'),
+const users = require('../models/user.server.models');
 //   log = require('../lib/logger')(),
 //   validator = require('../lib/validator'),
 //   config = require('../../config/config.js'),
