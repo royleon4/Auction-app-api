@@ -7,22 +7,22 @@ const users = require('../models/user.server.models'),
 /**
 * create a new user, from a request body that follows the `User` schema definition
 */
-exports.create = function(req, res){
-  if (false){ //!validator.isValidSchema(req.body, 'components.schemas.user')) {
-      log.warn(`users.controller.create: bad user ${JSON.stringify(req.body)}`);
-      return res.sendStatus(400);
-  } else {
-      let user = Object.assign({}, req.body);
-      users.insert(user, function(err, id){
-          if (err)
-          {
-              log.warn(`user.controller.create: couldn't create ${JSON.stringify(user)}: ${err}`);
-              return res.sendStatus(400); // duplicate record
-          }
-          res.status(201).json({id:id});
-      });
-  }
-}
+// exports.create = function(req, res){
+//   if (false){ //!validator.isValidSchema(req.body, 'components.schemas.user')) {
+//       log.warn(`users.controller.create: bad user ${JSON.stringify(req.body)}`);
+//       return res.sendStatus(400);
+//   } else {
+//       let user = Object.assign({}, req.body);
+//       users.insert(user, function(err, id){
+//           if (err)
+//           {
+//               log.warn(`user.controller.create: couldn't create ${JSON.stringify(user)}: ${err}`);
+//               return res.sendStatus(400); // duplicate record
+//           }
+//           res.status(201).json({id:id});
+//       });
+//   }
+// }
 //
 // exports.login = function(req, res){
 //     validator.areValidParameters(req.body, schema.paths['/users/login'].post.parameters)
