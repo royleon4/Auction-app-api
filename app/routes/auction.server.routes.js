@@ -2,9 +2,9 @@ const auction = require('../controllers/auction.server.controllers'),
       auth = require('../lib/middleware');
 
 module.exports = function(app){
-  app.route('/auctions')
-    .get(auction.list)
-    .post(auth.isAuthenticated, auction.create);
+  app.route('/api/v1/auctions')
+    .get(auction.list);
+    //.post(auth.isAuthenticated, auction.create);
 
   // app.route('/auctions/:id')
   //   .get(auction.get_one)
