@@ -1,5 +1,5 @@
-const users = require('../controllers/user.server.controllers'),
-      auth = require('../lib/middleware');
+// const users = require('../controllers/user.server.controllers'),
+//       auth = require('../lib/middleware');
 
 module.exports = function(app){
   // app.route('/api/v1/users')
