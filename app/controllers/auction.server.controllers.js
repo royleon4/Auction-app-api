@@ -5,17 +5,17 @@ const auctions = require('../models/auction.server.models');
  */
 exports.list = function(req, res){
     validator.areValidParameters(req.query, schema.paths['/auctions'].get.parameters)
-        .then(query => {
-            projects.getAll(query, (err, projects) => {
+        .then(function(query){
+            projects.getAll(query, (err, auctions) => {
                 // validate response
-                if (projects.length > 0) {
-                    if (!validator.isValidSchema(projects, 'components.schemas.auctionOverview')) {
-                        log.warn(JSON.stringify(projects, null, 2));
+                if (auctions.length > 0) {
+                    if (!validator.isValidSchema(auctions, 'components.schemas.auctionOverview')) {
+                        log.warn(JSON.stringify(auctions, null, 2));
                         log.warn(validator.getLastErrors());
                         return res.sendStatus(500);
                     }
                 }
-                return res.status(200).json(projects);
+                return res.status(200).json(auctions);
             })
         })
         .catch(() => res.sendStatus(400))
