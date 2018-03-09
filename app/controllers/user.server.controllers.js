@@ -1,7 +1,7 @@
 const users = require('../models/user.server.models'),
   log = require('../lib/logger')(),
-  validator = require('../lib/validator');
-  // config = require('../../config/config.js'),
+  validator = require('../lib/validator'),
+  config = require('../../config/config.js');
   // schema = require('../../config/seng365-2018_auction_0.0.5_swagger.json');
 
 /**
