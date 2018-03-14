@@ -6,7 +6,7 @@ module.exports = function(app){
     .post(users.create);
 
   app.route('/api/v1/users/:id')
-    .get(users.get_one)
+    .get(auth.isAuthenticated, users.get_one)
     .patch(auth.isAuthenticated, users.update);
 
   app.route('/api/v1/users/login')
