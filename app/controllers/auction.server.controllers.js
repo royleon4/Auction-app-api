@@ -71,9 +71,6 @@ exports.get_bids = function(req, res){
             return res.sendStatus(500);
         }
 
-        for(let i = 0; i < data.length; i++){
-
-        }
         res.status(200).json(results);
     });
 }
@@ -84,5 +81,19 @@ exports.get_bids = function(req, res){
  * (must be authenticated)
  */
 exports.add_bid = function(req, res){
+    let auction_id = parseInt(req.params.id);
+    if (!validator.isValidId(auction_id)) return res.sendStatus(404);
+
+    auctions.addBid(auction_id, function(err, results){
+        if (err){
+            log.warn(`auctions.controller.add_bid: model returned error: ${err}`);
+            return res.sendStatus(500);
+        }
+
+        for(let i = 0; i < data.length; i++){
+
+        }
+        res.status(200).json(results);
+    });
 
 }

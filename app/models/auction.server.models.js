@@ -15,6 +15,8 @@ const getAll = function(options, done){
         function(err, auctions){
             if (err)
                 return done(err);
+
+
             return done(err, auctions);
         }
     )
@@ -57,6 +59,11 @@ const get_bids = function(id, done) {
 
             if (err) return done(err);
             if(bids.length == 0) return done(err, []);
+
+            for(let item of bids) {
+                console.log('item: ', item['datetime']);
+            }
+
             return done(err, bids);
         }
     )
