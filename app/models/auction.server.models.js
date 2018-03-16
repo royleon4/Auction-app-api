@@ -51,7 +51,7 @@ const insert = function(auction, user_id, done){
  * Return all bids for an auction
  */
 const get_bids = function(id, done) {
-    let query = 'SELECT bid.bid_amount AS amount, bid.bid_datetime AS datetime, bid.bid_userid AS buyerID, auction_user.user_username AS buyerUsername FROM bid, auction_user WHERE bid.bid_userid = auction_user.user_id AND bid.bid_auctionid = ?';
+    let query = 'SELECT bid.bid_amount AS amount, bid.bid_datetime AS datetime, bid.bid_userid AS buyerId, auction_user.user_username AS buyerUsername FROM bid, auction_user WHERE bid.bid_userid = auction_user.user_id AND bid.bid_auctionid = ?';
     db.get_pool().query(
         query,
         [id],
@@ -60,17 +60,47 @@ const get_bids = function(id, done) {
             if (err) return done(err);
             if(bids.length == 0) return done(err, []);
 
+            let format_bids = [];
+
             for(let item of bids) {
-                console.log('item: ', item['datetime']);
+                //console.log(item);
+                format_bids.push({
+                    "amount": item['amount'],
+                    "datetime": Date.parse(item['datetime']),
+                    "buyerId": item['buyerId'],
+                    "buyerUsername": item["buyerUsername"]
+                });
             }
 
-            return done(err, bids);
+            return done(err, format_bids);
         }
     )
+}
+
+
+/**
+ * Add a bid to an auction
+ */
+const add_bid = function(auction_id, user_id, amount, done) {
+    let creation_date = dateTime.create().format('Y-m-d H:M:S');
+
+    let values = [[user_id, auction_id, amount, creation_date]];
+
+    db.get_pool().query(
+        'INSERT INTO bid (bid_userid, bid_auctionid, bid_amount, bid_datetime) VALUES (?)',
+        values,
+        function(err, results){
+            if (err) return done(err);
+
+            return done(err, results.insertId)
+        }
+    );
+
 }
 
 module.exports = {
     getAll: getAll,
     insert: insert,
-    getBids: get_bids
+    getBids: get_bids,
+    addBid: add_bid
 }

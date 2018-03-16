@@ -19,7 +19,7 @@ exports.create = function(req, res){
               log.warn(`user.controller.create: couldn't create ${JSON.stringify(user)}: ${err}`);
               return res.sendStatus(400); // duplicate record
           }
-          res.status(201).json({id:id});
+          res.status(201).send({id:id});
       });
   }
 }

@@ -84,16 +84,45 @@ exports.add_bid = function(req, res){
     let auction_id = parseInt(req.params.id);
     if (!validator.isValidId(auction_id)) return res.sendStatus(404);
 
-    auctions.addBid(auction_id, function(err, results){
+    let amount = parseInt(req.query.amount);
+    if (!validator.isValidId(amount)) return res.sendStatus(400);
+
+    auctions.getBids(auction_id, function(err, current_bids){
         if (err){
-            log.warn(`auctions.controller.add_bid: model returned error: ${err}`);
+            log.warn(`auctions.controller.get_bids: model returned error: ${err}`);
             return res.sendStatus(500);
         }
 
-        for(let i = 0; i < data.length; i++){
+        let max_bid = current_bids[0]['amount'];
 
+        for(let item of current_bids){
+            if(item['amount'] > max_bid){
+                max_bid = item['amount'];
+            }
         }
-        res.status(200).json(results);
-    });
 
+        if(amount <= max_bid){
+            res.sendStatus(400);
+        }else{
+            let token = req.get(config.get('authToken'));
+
+            users.getIdFromToken(token, function(err, user_id){
+                if (err){
+                    log.warn(`auctions.controller.add_bid: couldn't get id from token: ${err}`);
+                    return res.sendStatus(400);
+                }
+
+                auctions.addBid(auction_id, user_id, amount, function(err, results){
+                    if (err){
+                        log.warn(`auctions.controller.get_bids: model returned error: ${err}`);
+                        return res.sendStatus(500);
+                    }
+
+                    res.sendStatus(201);
+                });
+            });
+        }
+
+
+    });
 }
