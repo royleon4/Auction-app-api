@@ -110,7 +110,8 @@ const removeToken = (token, done) => {
  * @param done
  */
 const getOne = (id, done) => {
-    let query = 'SELECT user_id, user_username, user_givenname, user_familyname, user_email FROM auction_user WHERE user_id=?';
+
+    let query = 'SELECT user_username AS username, user_givenname AS givenName, user_familyname AS familyName, user_email AS email, user_accountbalance AS accountBalance FROM auction_user WHERE user_id=?';
     db.get_pool().query(
         query,
         [id],
@@ -121,6 +122,7 @@ const getOne = (id, done) => {
         }
     )
 };
+
 
 /**
  * get the user id associated with a given token, return null if not found
@@ -161,7 +163,7 @@ const alter = function(id, user, done){
         values = [user.username, user.givenname, user.familyname, user.email, id];
     }
 
-    console.log(query_string, values);
+    //console.log(query_string, values);
 
 
     db.get_pool().query(query_string,

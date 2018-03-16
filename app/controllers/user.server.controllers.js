@@ -25,20 +25,20 @@ exports.create = function(req, res){
 }
 
 exports.login = function(req, res){
-    validator.areValidParameters(req.body, schema.paths['/users/login'].post.parameters)
+    validator.areValidParameters(req.query, schema.paths['/users/login'].post.parameters)
         .then(function(){
                 //console.log("hello");
                 //log.warn(`success ${JSON.stringify(req.body)}`);
 
                 let username = '';
                 let email = '';
-                let password = req.body.password;
+                let password = req.query.password;
 
                 //res.status(200).json({username:username,email:email,password:password});
 
                 //check these parameters manually as swagger doesn't allow for oneOf type semantics so email and username are given as optional
-                if (req.body.hasOwnProperty('username')) username = req.body.username;
-                if (req.body.hasOwnProperty('email')) email = req.body.email;
+                if (req.query.hasOwnProperty('username')) username = req.query.username;
+                if (req.query.hasOwnProperty('email')) email = req.query.email;
 
                 //res.status(200).json({username:username,email:email,password:password});
 
@@ -48,11 +48,11 @@ exports.login = function(req, res){
 
                     users.getToken(id, function(err, token){
                         /// return existing token if already set (don't modify tokens)
-                        if (token) return res.status(200).json({id: id, token: token});
+                        if (token) return res.send({id: id, token: token});
 
                         // but if not, complete login by creating a token for the user
                         users.setToken(id, function(err, token){
-                           res.status(200).json({id: id, token: token});
+                           res.send({id: id, token: token});
                         });
 
                     });

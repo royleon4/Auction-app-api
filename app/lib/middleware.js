@@ -6,7 +6,7 @@ const
 /**
  * authenticate based on token
  */
-const isAuthenticated = (req, res, next) => {
+const isAuthenticated = function(req, res, next){
     let token = req.get(config.get('authToken'));
     log.debug(`authenticating ${token}`);
     users.getIdFromToken(token, (err, id) => {

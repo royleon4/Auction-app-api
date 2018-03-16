@@ -8,7 +8,7 @@
 
 const
     ZSchema = require('z-schema'),
-    schema = require('../../config/seng365-2018_auction_0.0.5_swagger.json'),
+    schema = require('../../config/seng365-2018_auction_0.0.6_swagger.json'),
     options = {assumeAdditional: true}, // ban additional properties and array items from the schema (no unexpected things)
     schemaValidator = new ZSchema(options),
     parameterValidator = require('swagger-parameters');

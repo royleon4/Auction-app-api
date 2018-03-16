@@ -4,10 +4,10 @@ module.exports = function(app){
   app.route('/api/v1/status')
       .get(admin.status);
 
-  // app.route('/reset')
-  //   .post(admin.reset);
-  //
-  // app.route('/resample')
-  //   .post(admin.resample);
+  app.route('/api/v1/reset')
+     .post(admin.reset);
+
+  app.route('/api/v1/resample')
+     .post(admin.resample);
 
 }
