@@ -44,18 +44,21 @@ exports.login = function(req, res){
 
                 users.authenticate(username, email, password, function(err, id){
                     //console.log(err, id);
-                    if(err) res.status(400).send('Invalid username/email/password supplied');
-
-                    users.getToken(id, function(err, token){
-                        /// return existing token if already set (don't modify tokens)
-                        if (token) return res.send({id: id, token: token});
-
-                        // but if not, complete login by creating a token for the user
-                        users.setToken(id, function(err, token){
-                           res.send({id: id, token: token});
+                    if(err){
+                        res.status(400).send('Invalid username/email/password supplied');
+                    } else {
+                        users.getToken(id, function(err, token){
+                            /// return existing token if already set (don't modify tokens)
+                            if (token){
+                                return res.send({id: id, token: token});
+                            } else {
+                                // but if not, complete login by creating a token for the user
+                                users.setToken(id, function(err, token){
+                                    res.send({id: id, token: token});
+                                });
+                            }
                         });
-
-                    });
+                    }
                 });
         })
         .catch(function(err){
@@ -87,10 +90,11 @@ exports.get_one = function(req, res){
     if (!validator.isValidId(id)) return res.sendStatus(404);
 
     users.getOne(id, function(err, results){
-        if (err)
+        if (err) {
             return res.sendStatus(500);
-        if (!results)  // no user found
+        } else if (!results) {  // no user found
             return res.sendStatus(404);
+        }
         let token = req.get(config.get('authToken'));
         //console.log(token);
         users.getIdFromToken(token, function(err, _id){
