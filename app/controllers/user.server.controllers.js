@@ -74,9 +74,11 @@ exports.login = function(req, res){
 exports.logout = function(req, res){
     let token = req.get(config.get('authToken'));
     users.removeToken(token, function(err){
-        if (err)
+        if (err){
             return res.sendStatus(401);
-        return res.sendStatus(200);
+        }else{
+            return res.sendStatus(200);
+        }
     });
     return null;
 }

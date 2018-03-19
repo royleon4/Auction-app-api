@@ -126,3 +126,75 @@ exports.add_bid = function(req, res){
 
     });
 }
+
+
+/**
+ * Get a single auction
+ */
+exports.get_one = function(req, res){
+    let auction_id = parseInt(req.params.id);
+    if (!validator.isValidId(auction_id)) return res.sendStatus(404);
+
+
+    auctions.getOne(auction_id, function(err, results){
+       if(err){
+           log.warn(`auctions.controller.get_one: model returned err: ${err}`);
+           return res.sendStatus(500);
+       } else if(!results){
+           return res.sendStatus(404);
+       }else{
+
+           //console.log(results);
+           let result = results[0]
+
+           let temp_result = {
+               "categoryId": result['auction_categoryid'],
+               "categoryTitle": result['category_title'],
+               "title": result['auction_title'],
+               "reservePrice": result['auction_reserveprice'],
+               "startDateTime": Date.parse(result['auction_startingdate']),
+               "endDateTime": Date.parse(result['auction_endingdate']),
+               "description": result['auction_description'],
+               "creationDateTime": Date.parse(result['auction_creationdate']),
+               "seller": {
+                   "id": result['auction_userid'],
+                   "username": result['user_username']
+               },
+               "startingBid": result['auction_startingprice']
+           };
+
+           //console.log(temp_result);
+
+           auctions.getBids(auction_id, function(err, current_bids) {
+               if (err) {
+                   log.warn(`auctions.controller.get_bids: model returned error: ${err}`);
+                   return res.sendStatus(500);
+               } else {
+                   let max_bid = current_bids[0]['amount'];
+
+                   let bids = []
+
+                   for (let item of current_bids) {
+
+                       bids.push({
+                           "amount": item['amount'],
+                           "datetime": item['datetime'],
+                           "buyerId": item['buyerId'],
+                           "buyerUsername": item['buyerUsername']
+                       });
+
+
+                       if (item['amount'] > max_bid) {
+                           max_bid = item['amount'];
+                       }
+                   }
+
+                   temp_result['currentBid'] = max_bid;
+                   temp_result['bids'] = bids;
+
+                   return res.status(200).send(temp_result);
+               }
+           });
+       }
+    });
+}

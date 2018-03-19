@@ -98,9 +98,34 @@ const add_bid = function(auction_id, user_id, amount, done) {
 
 }
 
+
+/**
+ * Get a single auction
+ */
+const get_one = function(auction_id, done) {
+
+    let values = [[auction_id]];
+
+    let query = 'SELECT auction.auction_categoryid, category.category_title, auction.auction_title, auction.auction_reserveprice, auction.auction_startingdate, auction.auction_endingdate, auction.auction_description, auction.auction_creationdate, auction.auction_userid, auction_user.user_username, auction.auction_startingprice FROM auction, category, auction_user WHERE auction.auction_categoryid = category.category_id AND auction.auction_userid = auction_user.user_id AND auction.auction_id = ?';
+
+    db.get_pool().query(
+        query,
+        values,
+        function(err, results){
+            if (err){
+                return done(err, false);
+            }else{
+                return done(false, results);
+            }
+        }
+    )
+
+}
+
 module.exports = {
     getAll: getAll,
     insert: insert,
     getBids: get_bids,
-    addBid: add_bid
+    addBid: add_bid,
+    getOne: get_one
 }
