@@ -7,9 +7,9 @@ module.exports = function(app){
     .post(auth.isAuthenticated, auction.create);
 
   app.route('/api/v1/auctions/:id')
-     .get(auction.get_one);
-  //   .patch(auction.update);
-  //
+     .get(auction.get_one)
+     .patch(auth.isAuthenticated, auction.update);
+
   app.route('/api/v1/auctions/:id/bids')
      .get(auction.get_bids)
      .post(auth.isAuthenticated, auction.add_bid);

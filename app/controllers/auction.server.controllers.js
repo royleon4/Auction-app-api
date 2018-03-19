@@ -145,7 +145,7 @@ exports.get_one = function(req, res){
        }else{
 
            //console.log(results);
-           let result = results[0]
+           let result = results[0];
 
            let temp_result = {
                "categoryId": result['auction_categoryid'],
@@ -196,5 +196,115 @@ exports.get_one = function(req, res){
                }
            });
        }
+    });
+}
+
+/**
+ * Update an auction
+ */
+exports.update = function(req, res){
+    let auction_id = parseInt(req.params.id);
+    if (!validator.isValidId(auction_id)) return res.sendStatus(404);
+
+    let token = req.get(config.get('authToken'));
+    users.getIdFromToken(token, function(err, _id){
+        if (_id !== auction_id){
+            return res.sendStatus(401);
+        }
+
+        if (false){ //!validator.isValidSchema(req.body, 'components.schemas.auction')) {
+            log.warn(`users.controller.update: bad auction ${JSON.stringify(req.body)}`);
+            return res.sendStatus(400);
+        }
+
+        auctions.getOne(auction_id, function(err, results){
+            if(err){
+                log.warn(`auctions.controller.update: model returned err: ${err}`);
+                return res.sendStatus(500);
+            } else if(!results){
+                return res.sendStatus(404);
+            }else{
+
+                let result = results[0];
+
+                //get time now and start time
+                let time_now = Date.now();
+                let auction_start_time = Date.parse(result['auction_startingdate']);
+
+                if(auction_start_time < time_now){
+                    res.status(403);
+                    //res.statusText('Forbidden - bidding has begun on the auction.');
+                    res.send();
+                }else{
+                    //do the update
+                    let category_id = 0;
+                    let title = "";
+                    let reserve_price = 0;
+                    let start_date_time = 0;
+                    let end_date_time = 0;
+                    let description = ""
+                    let starting_bid = 0;
+
+                    if(req.body.hasOwnProperty('categoryId')){
+                        category_id = req.body['categoryId'];
+                    }else{
+                        category_id = results['categoryId'];
+                    }
+
+                    if(req.body.hasOwnProperty('title')){
+                        title = req.body['title'];
+                    }else{
+                        title = results['title'];
+                    }
+
+                    if(req.body.hasOwnProperty('reservePrice')){
+                        reserve_price = req.body['reservePrice'];
+                    }else{
+                        reserve_price = results['reservePrice'];
+                    }
+
+                    if(req.body.hasOwnProperty('startDateTime')){
+                        start_date_time = req.body['startDateTime'];
+                    }else{
+                        start_date_time = results['startDateTime'];
+                    }
+
+                    if(req.body.hasOwnProperty('endDateTime')){
+                        end_date_time = req.body['endDateTime'];
+                    }else{
+                        end_date_time = results['endDateTime'];
+                    }
+
+                    if(req.body.hasOwnProperty('description')){
+                        description = req.body['description'];
+                    }else{
+                        description = results['description'];
+                    }
+
+                    if(req.body.hasOwnProperty('startingBid')){
+                        starting_bid = req.body['startingBid'];
+                    }else{
+                        starting_bid = results['startingBid'];
+                    }
+
+                    let auction = {
+                        "category_id": category_id,
+                        "title": title,
+                        "reserve_price": reserve_price,
+                        "start_date_time": start_date_time,
+                        "end_date_time": end_date_time,
+                        "description": description,
+                        "starting_bid": starting_bid
+                    };
+
+                    auctions.alter(auction_id, auction, function(err){
+                        if(err) return res.sendStatus(500);
+
+                        return res.sendStatus(200);
+                    })
+
+                }
+            }
+        });
     });
 }

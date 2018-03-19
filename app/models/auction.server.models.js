@@ -122,10 +122,28 @@ const get_one = function(auction_id, done) {
 
 }
 
+/**
+ * update auction
+ *
+ */
+const alter = function(id, auction, done){
+
+    let query_string = 'UPDATE auction SET auction_categoryid=?, auction_title=?, auction_reserveprice=?, auction_startingdate=?, auction_endingdate=?, auction_description=?, auction_startingprice=? WHERE auction_id=?';
+    let values = [auction.category_id, auction.title, auction.reserve_price, auction.start_date_time, auction.end_date_time, auction.description, auction.starting_bid, id];
+
+     db.get_pool().query(query_string,
+        values,
+        function(err, results){
+            done(err);
+        }
+    );
+};
+
 module.exports = {
     getAll: getAll,
     insert: insert,
     getBids: get_bids,
     addBid: add_bid,
-    getOne: get_one
+    getOne: get_one,
+    alter: alter
 }
