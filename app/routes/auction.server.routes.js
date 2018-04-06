@@ -13,11 +13,10 @@ module.exports = function(app){
   app.route('/api/v1/auctions/:id/bids')
      .get(auction.get_bids)
      .post(auth.isAuthenticated, auction.add_bid);
-  //
-  // app.route('/auctions/:id/photos')
-  //   .get(auction.list_photos)
-  //   .post(auction.add_photo);
-  //
 
+  app.route('/api/v1/auctions/:id/photos')
+     .get(auction.list_photos)
+     .post(auth.isAuthenticated, auction.add_photo)
+     .delete(auth.isAuthenticated, auction.delete_photo);
 
 }

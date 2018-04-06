@@ -3,7 +3,11 @@ const   auctions = require('../models/auction.server.models'),
         log = require('../lib/logger')(),
         validator = require('../lib/validator'),
         config = require('../../config/config.js'),
-        schema = require('../../config/seng365-2018_auction_0.0.5_swagger.json');
+        schema = require('../../config/seng365-2018_auction_0.0.5_swagger.json'),
+        fs = require('fs'),
+        path = require('path'),
+        app_dir = path.dirname(require.main.filename);
+
 
 /**
  * list all auctions
@@ -307,4 +311,132 @@ exports.update = function(req, res){
             }
         });
     });
+}
+
+/**
+* Get a photo for an auction
+*/
+exports.list_photos = function(req, res){
+  let auction_id = parseInt(req.params.id);
+  if (!validator.isValidId(auction_id)) return res.sendStatus(404);
+
+  // Check file exists
+  let check_path_jpeg = app_dir + "/uploads/" + auction_id + ".jpeg"
+  let check_path_png = app_dir + "/uploads/" + auction_id + ".png"
+
+  let default_path = app_dir + "/uploads/default.png"
+
+  fs.stat(check_path_jpeg, function(err, stat){
+    if(err){
+      fs.stat(check_path_png, function(err, stat){
+        if(err){
+          // Not found JPEG or PNG
+          fs.stat(default_path, function(err, stat){
+            if (err){
+              // There is a problem
+              res.sendStatus(500);
+            }else{
+              // Send the default
+              res.set("Content-Type", 'image/png');
+              res.sendFile(default_path);
+            }
+          });
+        }else{
+          // Its found a png
+          res.set("Content-Type", 'image/png');
+          res.sendFile(check_path_png);
+        }
+      });
+    }else{
+      // Its found a JPEG
+      res.set("Content-Type", 'image/jpeg');
+      res.sendFile(check_path_jpeg);
+    }
+  });
+}
+
+/**
+* Post a photo for an auction
+*/
+exports.add_photo = function(req, res){
+  let auction_id = parseInt(req.params.id);
+  if (!validator.isValidId(auction_id)) return res.sendStatus(404);
+
+  let token = req.get(config.get('authToken'));
+  users.getIdFromToken(token, function(err, _id){
+    auctions.getOne(auction_id, function(err, results){
+      if(err){
+        log.warn(`auctions.controller.get_one: model returned err: ${err}`);
+        return res.sendStatus(500);
+      }else if(!results){
+        return res.sendStatus(404);
+      }else{
+        let result = results[0];
+        let owner_id = result['auction_userid']
+
+        if(_id !== owner_id){
+          return res.sendStatus(403);
+        }else{
+          let content_type = req.get('Content-Type')
+
+          let file_ext = "";
+          if(content_type === 'image/png'){
+            file_ext = "png";
+          }else if(content_type === 'image/jpeg'){
+            file_ext = "jpeg";
+          }
+
+          req.pipe(fs.createWriteStream('./uploads/' + auction_id + '.' + file_ext));
+
+          res.sendStatus(201);
+
+        }
+      }
+    });
+  });
+}
+
+/**
+* Delete an auctions photo
+*/
+exports.delete_photo = function(req, res){
+  let auction_id = parseInt(req.params.id);
+  if (!validator.isValidId(auction_id)) return res.sendStatus(404);
+
+  let token = req.get(config.get('authToken'));
+  users.getIdFromToken(token, function(err, _id){
+    auctions.getOne(auction_id, function(err, results){
+      if(err){
+        log.warn(`auctions.controller.get_one: model returned err: ${err}`);
+        return res.sendStatus(500);
+      } else if(!results){
+        return res.sendStatus(404);
+      }else{
+        let result = results[0];
+        let owner_id = result['auction_userid']
+
+        if(_id !== owner_id){
+          return res.sendStatus(403);
+        }else{
+          let check_path_jpeg = "./uploads/" + auction_id + ".jpeg"
+          let check_path_png = "./uploads/" + auction_id + ".png"
+
+          fs.unlink(check_path_jpeg, function(err){
+            if(err){
+              fs.unlink(check_path_png, function(err){
+                if(err){
+                  log.warn(`auctions.controller.delete_photo: unlinking file returned: ${err}`);
+                  res.sendStatus(500);
+                }else{
+                  res.sendStatus(201);
+                }
+              });
+            }else{
+              res.sendStatus(201)
+            }
+          });
+        }
+      }
+    });
+  });
 }
