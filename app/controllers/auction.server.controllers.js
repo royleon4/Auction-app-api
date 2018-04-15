@@ -3,7 +3,7 @@ const   auctions = require('../models/auction.server.models'),
         log = require('../lib/logger')(),
         validator = require('../lib/validator'),
         config = require('../../config/config.js'),
-        schema = require('../../config/seng365-2018_auction_0.0.5_swagger.json'),
+        schema = require('../../config/ash_validation_schemas_0.0.1.json'),
         fs = require('fs'),
         path = require('path'),
         app_dir = path.dirname(require.main.filename);
@@ -36,7 +36,7 @@ exports.list = function(req, res){
  * (must be authenticated)
  */
 exports.create = function(req, res){
-    if (false){ //!validator.isValidSchema(req.body, 'components.schemas.auctionsOverview')) {
+    if (!validator.isValidSchema(req.body, 'components.schemas.PostAuction')) {
         log.warn(`auctions.controller.create: bad auction ${JSON.stringify(req.body)}`);
         return res.sendStatus(400);
     } else {
@@ -216,7 +216,7 @@ exports.update = function(req, res){
             return res.sendStatus(401);
         }
 
-        if (false){ //!validator.isValidSchema(req.body, 'components.schemas.auction')) {
+        if (!validator.isValidSchema(req.body, 'components.schemas.Auction')) {
             log.warn(`users.controller.update: bad auction ${JSON.stringify(req.body)}`);
             return res.sendStatus(400);
         }

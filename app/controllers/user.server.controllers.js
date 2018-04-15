@@ -2,13 +2,13 @@ const users = require('../models/user.server.models'),
   log = require('../lib/logger')(),
   validator = require('../lib/validator'),
   config = require('../../config/config.js'),
-  schema = require('../../config/seng365-2018_auction_0.0.5_swagger.json');
+  schema = require('../../config/ash_validation_schemas_0.0.1.json');
 
 /**
 * create a new user, from a request body that follows the `User` schema definition
 */
 exports.create = function(req, res){
-  if (false){ //!validator.isValidSchema(req.body, 'components.schemas.user')) {
+  if (!validator.isValidSchema(req.body, 'components.schemas.PostUser')) {
       log.warn(`users.controller.create: bad user ${JSON.stringify(req.body)}`);
       return res.sendStatus(400);
   } else {
@@ -122,7 +122,7 @@ exports.update = function(req, res){
     users.getIdFromToken(token, function(err, _id){
         if (_id !== id)
             return res.sendStatus(403);
-        if (false){ //!validator.isValidSchema(req.body, 'components.schemas.user')) {
+        if (!validator.isValidSchema(req.body, 'components.schemas.User')) {
             log.warn(`users.controller.update: bad user ${JSON.stringify(req.body)}`);
             return res.sendStatus(400);
         }
