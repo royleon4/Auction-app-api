@@ -3,7 +3,7 @@ const   auctions = require('../models/auction.server.models'),
         log = require('../lib/logger')(),
         validator = require('../lib/validator'),
         config = require('../../config/config.js'),
-        schema = require('../../config/ash_validation_schemas_0.0.1.json'),
+        schema = require('../../config/seng365-2018_auction_0.0.7_swagger.json'),
         fs = require('fs'),
         path = require('path'),
         app_dir = path.dirname(require.main.filename);
@@ -18,7 +18,7 @@ exports.list = function(req, res){
             auctions.getAll(req.query, function(err, auctions){
                 // validate response
                 if (auctions.length > 0) {
-                    if (false){ //!validator.isValidSchema(auctions, 'components.schemas.auctionOverview')) {
+                    if (!validator.isValidSchema(auctions, 'components.schemas.auctionOverview')) {
                         log.warn(JSON.stringify(auctions, null, 2));
                         log.warn(validator.getLastErrors());
                         return res.sendStatus(500);
@@ -409,10 +409,11 @@ exports.delete_photo = function(req, res){
       if(err){
         log.warn(`auctions.controller.get_one: model returned err: ${err}`);
         return res.sendStatus(500);
-      } else if(!results){
+      } else if(!results || results.length == 0){
         return res.sendStatus(404);
       }else{
         let result = results[0];
+        log.warn(result);
         let owner_id = result['auction_userid']
 
         if(_id !== owner_id){

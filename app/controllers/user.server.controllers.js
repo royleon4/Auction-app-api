@@ -2,14 +2,15 @@ const users = require('../models/user.server.models'),
   log = require('../lib/logger')(),
   validator = require('../lib/validator'),
   config = require('../../config/config.js'),
-  schema = require('../../config/ash_validation_schemas_0.0.1.json');
+  schema = require('../../config/seng365-2018_auction_0.0.7_swagger.json');
 
 /**
 * create a new user, from a request body that follows the `User` schema definition
 */
 exports.create = function(req, res){
-  if (!validator.isValidSchema(req.body, 'components.schemas.PostUser')) {
+  if (!validator.isValidSchema(req.body, 'components.schemas.User')) {
       log.warn(`users.controller.create: bad user ${JSON.stringify(req.body)}`);
+      log.warn(validator.getLastErrors());
       return res.sendStatus(400);
   } else {
       let user = Object.assign({}, req.body);
@@ -39,6 +40,8 @@ exports.login = function(req, res){
                 //check these parameters manually as swagger doesn't allow for oneOf type semantics so email and username are given as optional
                 if (req.query.hasOwnProperty('username')) username = req.query.username;
                 if (req.query.hasOwnProperty('email')) email = req.query.email;
+
+
 
                 //res.status(200).json({username:username,email:email,password:password});
 

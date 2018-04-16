@@ -1226,8 +1226,92 @@
             "format": "password"
           }
         }
+      },
+      "Auction": {
+        "title": "Auction",
+        "type": "object",
+        "properties": {
+          "categoryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "startDateTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "endDateTime": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "reservePrice": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "startingBid": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "User": {
+        "title": "User",
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string"
+          },
+          "givenName": {
+            "type": "string"
+          },
+          "familyName": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "PostAuction": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Auction"
+          }
+        ],
+        "required": [
+          "categoryId",
+          "title",
+          "description",
+          "startDateTime",
+          "endDateTime",
+          "reservePrice",
+          "startingBid"
+        ]
+      },
+      "PostUser": {
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/User"
+          }
+        ],
+        "required": [
+          "username",
+          "givenName",
+          "familyName",
+          "email",
+          "password"
+        ]
       }
-
     },
     "securitySchemes": {
       "User": {
