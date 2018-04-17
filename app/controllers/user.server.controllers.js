@@ -2,7 +2,9 @@ const users = require('../models/user.server.models'),
   log = require('../lib/logger')(),
   validator = require('../lib/validator'),
   config = require('../../config/config.js'),
-  schema = require('../../config/seng365-2018_auction_0.0.7_swagger.json');
+  schema = require('../../config/seng365-2018_auction_0.0.7_swagger.json'),
+  emailvalidator = require("email-validator");
+
 
 /**
 * create a new user, from a request body that follows the `User` schema definition
@@ -41,28 +43,29 @@ exports.login = function(req, res){
                 if (req.query.hasOwnProperty('username')) username = req.query.username;
                 if (req.query.hasOwnProperty('email')) email = req.query.email;
 
-
-
-                //res.status(200).json({username:username,email:email,password:password});
-
-                users.authenticate(username, email, password, function(err, id){
-                    //console.log(err, id);
-                    if(err){
-                        res.status(400).send('Invalid username/email/password supplied');
-                    } else {
-                        users.getToken(id, function(err, token){
-                            /// return existing token if already set (don't modify tokens)
-                            if (token){
-                                return res.send({id: id, token: token});
-                            } else {
-                                // but if not, complete login by creating a token for the user
-                                users.setToken(id, function(err, token){
-                                    res.send({id: id, token: token});
-                                });
-                            }
-                        });
-                    }
-                });
+                if(username == "" && email == ""){
+                  res.status(400).send('Invalid username/email/password supplied');
+                }else{
+                  users.authenticate(username, email, password, function(err, id){
+                      //console.log(err, id);
+                      if(err){
+                          log.warn("Here: " + err);
+                          res.status(400).send('Invalid username/email/password supplied');
+                      } else {
+                          users.getToken(id, function(err, token){
+                              /// return existing token if already set (don't modify tokens)
+                              if (token){
+                                  return res.send({id: id, token: token});
+                              } else {
+                                  // but if not, complete login by creating a token for the user
+                                  users.setToken(id, function(err, token){
+                                      res.send({id: id, token: token});
+                                  });
+                              }
+                          });
+                      }
+                  });
+                }
         })
         .catch(function(err){
             //console.log(err);
@@ -134,7 +137,8 @@ exports.update = function(req, res){
             if(err) return res.sendStatus(500);
             if (!results) return res.sendStatus(404);  // no user found
 
-            //console.log(results);
+            // console.log(results);
+            // console.log(req.body);
 
             let username = '';
             let givenname = '';
@@ -145,55 +149,60 @@ exports.update = function(req, res){
             if(req.body.hasOwnProperty('username')){
                 username = req.body.username;
             }else{
-                username = results.user_username;
+                username = results.username;
             }
 
-            if(req.body.hasOwnProperty('givenname')){
-                givenname = req.body.givenname;
+            if(req.body.hasOwnProperty('givenName')){
+                givenname = req.body.givenName;
             }else{
-                givenname = results.user_givenname;
+                givenname = results.givenName;
             }
 
-            if(req.body.hasOwnProperty('familyname')){
-                familyname = req.body.familyname;
+            if(req.body.hasOwnProperty('familyName')){
+                familyname = req.body.familyName;
             }else{
-                familyname = results.user_familyname;
+                familyname = results.familyName;
             }
 
             if(req.body.hasOwnProperty('email')){
                 email = req.body.email;
             }else{
-                email = results.user_email;
+                email = results.email;
             }
 
             if(req.body.hasOwnProperty('password')) {
                 password = req.body.password;
             }
 
-            let user = {};
-
-            if(password != ''){
-                user = {
-                    "username": username,
-                    "givenname": givenname,
-                    "familyname": familyname,
-                    "email": email,
-                    "password": password
-                }
+            if(!emailvalidator.validate(email)){
+              res.status(400).send('Invalid email supplied');
             }else{
-                user = {
-                    "username": username,
-                    "givenname": givenname,
-                    "familyname": familyname,
-                    "email": email
-                }
+
+              let user = {};
+
+              if(password != ''){
+                  user = {
+                      "username": username,
+                      "givenName": givenname,
+                      "familyName": familyname,
+                      "email": email,
+                      "password": password
+                  }
+              }else{
+                  user = {
+                      "username": username,
+                      "givenName": givenname,
+                      "familyName": familyname,
+                      "email": email
+                  }
+              }
+              console.log(user);
+              users.alter(id, user, function(err){
+                  if (err)
+                      return res.sendStatus(500);
+                  return res.sendStatus(201);
+              });
             }
-            console.log(user);
-            users.alter(id, user, function(err){
-                if (err)
-                    return res.sendStatus(500);
-                return res.sendStatus(200);
-            });
         });
     })
 }

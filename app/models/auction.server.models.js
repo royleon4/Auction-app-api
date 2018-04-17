@@ -9,12 +9,20 @@ const dateFormat = require('dateformat');
 const getAll = function(options, done){
     // TODO: parse options for server side searching
 
-    let query = 'SELECT * FROM auction';
+    let query = "SELECT a.auction_id AS id, c.category_title AS categoryTitle, c.category_id AS categoryId, a.auction_title AS title, a.auction_reserveprice AS reservePrice, a.auction_startingdate AS startDateTime, a.auction_endingdate AS endDateTime, MAX(b.bid_amount) AS currentBid FROM auction a, category c, bid b WHERE a.auction_categoryid = c.category_id AND a.auction_id = b.bid_auctionid GROUP BY a.auction_id";
+
     db.get_pool().query(
         query,
         function(err, auctions){
             if (err)
                 return done(err);
+
+            // TODO: convert all times to ints
+            for(let key in auctions){
+              auctions[key]['startDateTime'] = Date.parse(auctions[key]['startDateTime']);
+              auctions[key]['endDateTime'] = Date.parse(auctions[key]['endDateTime']);
+            }
+
 
 
             return done(err, auctions);

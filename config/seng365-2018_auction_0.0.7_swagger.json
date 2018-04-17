@@ -1232,8 +1232,7 @@
         "type": "object",
         "properties": {
           "categoryId": {
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           "title": {
             "type": "string"
@@ -1242,20 +1241,16 @@
             "type": "string"
           },
           "startDateTime": {
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           "endDateTime": {
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           "reservePrice": {
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           },
           "startingBid": {
-            "type": "integer",
-            "format": "int32"
+            "type": "integer"
           }
         }
       },

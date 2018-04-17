@@ -10,6 +10,7 @@
     "bunyan": "^1.8.12",
     "convict": "^4.0.2",
     "dateformat": "^3.0.3",
+    "email-validator": "^2.0.3",
     "express": "^4.16.2",
     "mysql": "^2.15.0",
     "node-datetime": "^2.0.6",

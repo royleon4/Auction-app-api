@@ -33,7 +33,7 @@ const insert = function(user, done){
 *   authenticate user
  */
 const authenticate = function(username, email, password, done){
-    //console.log(username, email, password);
+    console.log(username, email, password);
     db.get_pool().query(
         'SELECT user_id, user_password, user_salt FROM auction_user WHERE (user_username=? OR user_email=?)',
         [username, email],
@@ -41,7 +41,7 @@ const authenticate = function(username, email, password, done){
             //console.log(results);
 
             if (err || results.length !== 1){
-                //console.log("failed auth");
+                console.log(err, results.length);
                 return done(true); // return error = true (failed auth)
             }else{
                 // console.log(results[0]);
@@ -157,10 +157,10 @@ const alter = function(id, user, done){
         const hash = getHash(user.password, salt);
 
         query_string = 'UPDATE auction_user SET user_username=?, user_givenname=?, user_familyname=?, user_email=?, user_password=?, user_salt=? WHERE user_id=?';
-        values = [user.username, user.givenname, user.familyname, user.email, hash, salt.toString('hex'), id];
+        values = [user.username, user.givenName, user.familyName, user.email, hash, salt.toString('hex'), id];
     }else{
         query_string = 'UPDATE auction_user SET user_username=?, user_givenname=?, user_familyname=?, user_email=? WHERE user_id=?';
-        values = [user.username, user.givenname, user.familyname, user.email, id];
+        values = [user.username, user.givenName, user.familyName, user.email, id];
     }
 
     //console.log(query_string, values);

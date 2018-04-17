@@ -17,14 +17,21 @@ exports.list = function(req, res){
         .then(function(){
             auctions.getAll(req.query, function(err, auctions){
                 // validate response
-                if (auctions.length > 0) {
-                    if (!validator.isValidSchema(auctions, 'components.schemas.auctionOverview')) {
+
+                console.log(auctions);
+
+                if (auctions && auctions.length > 0) {
+                    if (!validator.isValidSchema(auctions, 'components.schemas.auctionsOverview')) {
                         log.warn(JSON.stringify(auctions, null, 2));
                         log.warn(validator.getLastErrors());
                         return res.sendStatus(500);
+                    }else{
+                      return res.status(200).json(auctions);
                     }
+                }else{
+                  return res.sendStatus(400);
                 }
-                return res.status(200).json(auctions);
+
             })
         })
         .catch(() => res.sendStatus(400))
@@ -37,7 +44,7 @@ exports.list = function(req, res){
  */
 exports.create = function(req, res){
     if (!validator.isValidSchema(req.body, 'components.schemas.PostAuction')) {
-        log.warn(`auctions.controller.create: bad auction ${JSON.stringify(req.body)}`);
+        log.warn(`auctions.controller.create: bad auction against schema ${JSON.stringify(req.body)}`);
         return res.sendStatus(400);
     } else {
         let auction = Object.assign({}, req.body);
@@ -132,6 +139,7 @@ exports.add_bid = function(req, res){
 }
 
 
+
 /**
  * Get a single auction
  */
@@ -171,11 +179,11 @@ exports.get_one = function(req, res){
 
            auctions.getBids(auction_id, function(err, current_bids) {
                if (err) {
-                   log.warn(`auctions.controller.get_bids: model returned error: ${err}`);
-                   return res.sendStatus(500);
+                 log.warn(`auctions.controller.get_bids: model returned error: ${err}`);
+                 return res.sendStatus(500);
                } else {
+                 if(current_bids && current_bids.length > 0){
                    let max_bid = current_bids[0]['amount'];
-
                    let bids = []
 
                    for (let item of current_bids) {
@@ -195,13 +203,19 @@ exports.get_one = function(req, res){
 
                    temp_result['currentBid'] = max_bid;
                    temp_result['bids'] = bids;
+                 }else{
+                   temp_result['currentBid'] = 0;
+                   temp_result['bids'] = [];
+                 }
 
-                   return res.status(200).send(temp_result);
+                return res.status(200).send(temp_result);
                }
            });
        }
-    });
+     });
 }
+
+
 
 /**
  * Update an auction
