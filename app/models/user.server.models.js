@@ -39,30 +39,25 @@ const authenticate = function(username, email, password, done){
         [username, email],
         function(err, results) {
 
-            console.log(username, email, password);
-            console.log(results);
+            // console.log(username, email, password);
+            // console.log(results);
 
             if (err || results.length !== 1){
                 //console.log(err, results.length);
                 return done(true); // return error = true (failed auth)
             }else{
 
-                console.log(results[0].user_salt);
-
                 if(results[0].user_salt == null){
                   results[0].user_salt = '';
                 }
 
-                console.log(results[0].user_salt);
-
                 let salt = Buffer.from(results[0].user_salt, 'hex');
-                //let salt = results[0].user_salt;
 
-                console.log(salt);
-                console.log(results[0].user_id);
-                console.log(results[0].user_password);
-                console.log("Password: " + password);
-                console.log(getHash(password, salt));
+                // console.log(salt);
+                // console.log(results[0].user_id);
+                // console.log(results[0].user_password);
+                // console.log("Password: " + password);
+                // console.log(getHash(password, salt));
 
                 if (results[0].user_password === getHash(password, salt)){
                     return done(false, results[0].user_id);

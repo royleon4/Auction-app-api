@@ -12,18 +12,24 @@ const users = require('../models/user.server.models'),
 exports.create = function(req, res){
   if (!validator.isValidSchema(req.body, 'components.schemas.User')) {
       log.warn(`users.controller.create: bad user ${JSON.stringify(req.body)}`);
-      log.warn(validator.getLastErrors());
+      //log.warn(validator.getLastErrors());
       return res.sendStatus(400);
   } else {
       let user = Object.assign({}, req.body);
-      users.insert(user, function(err, id){
-          if (err)
-          {
-              log.warn(`user.controller.create: couldn't create ${JSON.stringify(user)}: ${err}`);
-              return res.sendStatus(400); // duplicate record
-          }
-          res.status(201).send({id:id});
-      });
+
+      if(!emailvalidator.validate(user['email']) || user['password'].length == 0){
+        log.warn(`user.controller.create: failed validation ${JSON.stringify(user)}: ${err}`);
+        res.status(400).send('Malformed request');
+      }else{
+        users.insert(user, function(err, id){
+            if (err)
+            {
+                log.warn(`user.controller.create: couldn't create ${JSON.stringify(user)}: ${err}`);
+                return res.sendStatus(400); // duplicate record
+            }
+            res.status(201).send({id:id});
+        });
+      }
   }
 }
 
@@ -108,7 +114,8 @@ exports.get_one = function(req, res){
         users.getIdFromToken(token, function(err, _id){
             //console.log(id, _id);
             if (_id !== id) {
-                delete results.user_email;
+                delete results.email;
+                delete results.accountBalance;
             }
             res.status(200).json(results);
         })

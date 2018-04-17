@@ -49,6 +49,21 @@ exports.create = function(req, res){
     } else {
         let auction = Object.assign({}, req.body);
 
+        if(!auction["endDateTime"] || auction["endDateTime"] <= 0){
+          log.warn(`auctions.controller.create: bad end date ${JSON.stringify(auction)}: ${err}`);
+          return res.sendStatus(400);
+        }
+
+        if(!auction["startDateTime"] || auction["startDateTime"] <= 0){
+          log.warn(`auctions.controller.create: bad start date ${JSON.stringify(auction)}: ${err}`);
+          return res.sendStatus(400);
+        }
+
+        if(auction["startDateTime"] >= auction["endDateTime"]){
+          log.warn(`auctions.controller.create: start date must be before end ${JSON.stringify(auction)}: ${err}`);
+          return res.sendStatus(400);
+        }
+
         let token = req.get(config.get('authToken'));
 
         users.getIdFromToken(token, function(err, user_id){

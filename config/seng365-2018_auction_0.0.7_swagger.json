@@ -1241,16 +1241,20 @@
             "type": "string"
           },
           "startDateTime": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           },
           "endDateTime": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           },
           "reservePrice": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           },
           "startingBid": {
-            "type": "integer"
+            "type": "integer",
+            "minimum": 0
           }
         }
       },
