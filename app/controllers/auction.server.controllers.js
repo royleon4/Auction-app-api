@@ -104,12 +104,16 @@ exports.add_bid = function(req, res){
             return res.sendStatus(500);
         }
 
-        let max_bid = current_bids[0]['amount'];
+        let max_bid = 0
+        if(current_bids && current_bids.length > 0){
 
-        for(let item of current_bids){
-            if(item['amount'] > max_bid){
-                max_bid = item['amount'];
-            }
+          max_bid = current_bids[0]['amount'];
+
+          for(let item of current_bids){
+              if(item['amount'] > max_bid){
+                  max_bid = item['amount'];
+              }
+          }
         }
 
         if(amount <= max_bid){
