@@ -46,8 +46,10 @@ exports.reset = function(req, res){
 
 exports.resample = function(req, res){
     admin.database_resample(function(err){
-        if(err) res.sendStatus(500);
-
-        res.sendStatus(201);
+        if(err){
+            res.sendStatus(500);
+        }else{
+            res.sendStatus(201);
+        }
     });
 }
