@@ -132,15 +132,18 @@ const insert = function(auction, user_id, done){
     // let start_date = dateFormat(startDateTime, "yyyy-mm-dd h:MM:ss");
     // let end_date = dateFormat(endDateTime, "yyyy-mm-dd h:MM:ss");
 
-    let creation_date = (new Date).getTime();
+    let creation_date = new Date(parseInt((new Date).getTime()));
+    /*
+    let creation_date = new Date((new Date).getTime());
     let start_date = new Date(startDateTime);
     let end_date = new Date(endDateTime);
+    */
 
     console.log("***********");
-    console.log("creating auction end date", end_date, endDateTime);
+    console.log('creating auction creation_date=', creation_date);
     console.log("***********");
 
-    let values = [[auction.categoryId, auction.title, auction.description, creation_date, start_date, end_date, auction.reservePrice, auction.startingBid, user_id]];
+    let values = [[auction.categoryId, auction.title, auction.description, creation_date, startDateTime, endDateTime, auction.reservePrice, auction.startingBid, user_id]];
 
     db.get_pool().query(
         'INSERT INTO auction (auction_categoryid, auction_title, auction_description, auction_creationdate, auction_startingdate, auction_endingdate, auction_reserveprice, auction_startingprice, auction_userid) VALUES (?)',

@@ -270,10 +270,8 @@ exports.update = function(req, res){
     if (!validator.isValidId(auction_id)) return res.sendStatus(404);
 
     let token = req.get(config.get('authToken'));
+    console.log('Update auction=',token);
     users.getIdFromToken(token, function(err, _id){
-        if (_id !== auction_id){
-            return res.sendStatus(401);
-        }
 
         if (!validator.isValidSchema(req.body, 'components.schemas.Auction')) {
             log.warn(`users.controller.update: bad auction ${JSON.stringify(req.body)}`);
@@ -289,6 +287,13 @@ exports.update = function(req, res){
             }else{
 
                 let result = results[0];
+
+                let user_id = results[0]['auction_userid'];
+
+                if (_id !== user_id){
+                    console.log('user_id=',user_id, ' and user_id=', _id);
+                    return res.sendStatus(401);
+                }
 
                 //get time now and start time
                 let time_now = Date.now();
@@ -311,43 +316,43 @@ exports.update = function(req, res){
                     if(req.body.hasOwnProperty('categoryId')){
                         category_id = req.body['categoryId'];
                     }else{
-                        category_id = results['categoryId'];
+                        category_id = result['auction_categoryid'];
                     }
 
                     if(req.body.hasOwnProperty('title')){
                         title = req.body['title'];
                     }else{
-                        title = results['title'];
+                        title = result['title'];
                     }
 
                     if(req.body.hasOwnProperty('reservePrice')){
                         reserve_price = req.body['reservePrice'];
                     }else{
-                        reserve_price = results['reservePrice'];
+                        reserve_price = result['auction_reserveprice'];
                     }
 
                     if(req.body.hasOwnProperty('startDateTime')){
                         start_date_time = req.body['startDateTime'];
                     }else{
-                        start_date_time = results['startDateTime'];
+                        start_date_time = result['auction_startingdate'];
                     }
 
                     if(req.body.hasOwnProperty('endDateTime')){
                         end_date_time = req.body['endDateTime'];
                     }else{
-                        end_date_time = results['endDateTime'];
+                        end_date_time = result['auction_endingdate'];
                     }
 
                     if(req.body.hasOwnProperty('description')){
                         description = req.body['description'];
                     }else{
-                        description = results['description'];
+                        description = result['auction_description'];
                     }
 
                     if(req.body.hasOwnProperty('startingBid')){
                         starting_bid = req.body['startingBid'];
                     }else{
-                        starting_bid = results['startingBid'];
+                        starting_bid = result['auction_startingprice'];
                     }
 
                     let auction = {
@@ -361,7 +366,14 @@ exports.update = function(req, res){
                     };
 
                     auctions.alter(auction_id, auction, function(err){
-                        if(err) return res.sendStatus(500);
+                        if(err){
+                            console.log(auction);
+                            console.log(err)
+                            return res.sendStatus(500);
+                        }
+
+                        console.log('Update auction: invalid end date');
+                        console.log(auction);
 
                         return res.sendStatus(201);
                     })
@@ -439,7 +451,9 @@ exports.add_photo = function(req, res){
         if(_id !== owner_id){
           return res.sendStatus(403);
         }else{
-          let content_type = req.get('Content-Type')
+          let content_type = req.get('Content-Type');
+          console.log('Content-Type=', content_type);
+          if (!content_type){console.log(req)};
 
           let file_ext = "";
           if(content_type === 'image/png'){
@@ -447,7 +461,8 @@ exports.add_photo = function(req, res){
           }else if(content_type === 'image/jpeg' || content_type === 'image/jpg'){
             file_ext = "jpeg";
           }
-
+          if (file_ext === '') {console.log('file_ext is empty')};
+          console.log('add_photo:', auction_id + file_ext, 'user_id', owner_id);
           req.pipe(fs.createWriteStream('./uploads/' + auction_id + '.' + file_ext));
 
           res.sendStatus(201);
