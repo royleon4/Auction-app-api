@@ -1169,8 +1169,7 @@
         "type": "object",
         "properties": {
           "reservePrice": {
-            "type": "integer",
-            "minimum": 0
+            "type": "number"
           }
         }
       },

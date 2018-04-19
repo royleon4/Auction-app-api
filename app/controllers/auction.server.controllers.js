@@ -54,12 +54,12 @@ exports.create = function(req, res){
         }
 
         if(!auction["startDateTime"] || auction["startDateTime"] <= 0){
-          log.warn(`auctions.controller.create: bad start date ${JSON.stringify(auction)}: ${err}`);
+          log.warn(`auctions.controller.create: bad start date ${JSON.stringify(auction)}`);
           return res.sendStatus(400);
         }
 
         if(auction["startDateTime"] >= auction["endDateTime"]){
-          log.warn(`auctions.controller.create: start date must be before end ${JSON.stringify(auction)}: ${err}`);
+          log.warn(`auctions.controller.create: start date must be before end ${JSON.stringify(auction)}`);
           return res.sendStatus(400);
         }
 
@@ -76,6 +76,7 @@ exports.create = function(req, res){
                     log.warn(`auctions.controller.create: couldn't create ${JSON.stringify(auction)}: ${err}`);
                     return res.sendStatus(400); // duplicate record
                 }
+                log.warn(`auctions.controller.create: created successfully ${JSON.stringify(auction)}`);
                 res.status(201).json({id:id});
             });
 
@@ -106,11 +107,14 @@ exports.get_bids = function(req, res){
  * (must be authenticated)
  */
 exports.add_bid = function(req, res){
+    let date_time_now = (new Date).getTime();
+
     let auction_id = parseInt(req.params.id);
     if (!validator.isValidId(auction_id)) return res.sendStatus(404);
 
     let amount = parseInt(req.query.amount);
     if (!validator.isValidId(amount)) return res.sendStatus(400);
+
 
     auctions.getOne(auction_id, function(err, results){
         if(err) return res.sendStatus(404);
@@ -120,11 +124,16 @@ exports.add_bid = function(req, res){
         let result = results[0];
 
         let end_date_time = Date.parse(result['auction_endingdate']);
-        let date_time_now = Date.now();
 
-        console.log(end_date_time, date_time_now);
+        console.log("*************");
+        console.log("end_date", result['auction_endingdate'], end_date_time);
+        console.log("now", date_time_now);
+        let iso_time = new Date().toISOString();
+        console.log("iso_time", iso_time, Date.parse(iso_time));
+        console.log("*************");
 
         if(end_date_time <= date_time_now){
+            log.warn(`auctions.controller.add_bids: adding bid after end date: ${result['auction_endingdate']}`);
             return res.sendStatus(400);
         }else {
             auctions.getBids(auction_id, function (err, current_bids) {
@@ -146,6 +155,7 @@ exports.add_bid = function(req, res){
                 }
 
                 if (amount <= max_bid) {
+                    log.warn(`auctions.controller.add_bids: bid is less than or equal to current amount`);
                     res.sendStatus(400);
                 } else {
                     let token = req.get(config.get('authToken'));
