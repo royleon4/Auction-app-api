@@ -962,7 +962,7 @@
               "type": "object",
               "properties": {
                 "currentBid": {
-                  "type": "integer",
+                  "type": "number",
                   "minimum": 0
                 }
               }

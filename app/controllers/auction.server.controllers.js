@@ -16,11 +16,13 @@ exports.list = function(req, res){
     validator.areValidParameters(req.query, schema.paths['/auctions'].get.parameters)
         .then(function(){
             auctions.getAll(req.query, function(err, auctions){
-                // validate response
 
-                console.log(auctions);
+                if(err || !auctions) return res.sendStatus(400);
 
-                if (auctions && auctions.length > 0) {
+                if(auctions.length == 0){
+                  //console.log("empty");
+                  return res.status(200).json(auctions);
+                }else{
                     if (!validator.isValidSchema(auctions, 'components.schemas.auctionsOverview')) {
                         log.warn(JSON.stringify(auctions, null, 2));
                         log.warn(validator.getLastErrors());
@@ -28,10 +30,7 @@ exports.list = function(req, res){
                     }else{
                       return res.status(200).json(auctions);
                     }
-                }else{
-                  return res.sendStatus(400);
                 }
-
             })
         })
         .catch(() => res.sendStatus(400))
@@ -50,7 +49,7 @@ exports.create = function(req, res){
         let auction = Object.assign({}, req.body);
 
         if(!auction["endDateTime"] || auction["endDateTime"] <= 0){
-          log.warn(`auctions.controller.create: bad end date ${JSON.stringify(auction)}: ${err}`);
+          log.warn(`auctions.controller.create: bad end date ${JSON.stringify(auction)}`);
           return res.sendStatus(400);
         }
 
@@ -388,18 +387,21 @@ exports.list_photos = function(req, res){
             }else{
               // Send the default
               res.set("Content-Type", 'image/png');
+              res.status(200);
               res.sendFile(default_path);
             }
           });
         }else{
           // Its found a png
           res.set("Content-Type", 'image/png');
+          res.status(200);
           res.sendFile(check_path_png);
         }
       });
     }else{
       // Its found a JPEG
       res.set("Content-Type", 'image/jpeg');
+
       res.sendFile(check_path_jpeg);
     }
   });
@@ -432,7 +434,7 @@ exports.add_photo = function(req, res){
           let file_ext = "";
           if(content_type === 'image/png'){
             file_ext = "png";
-          }else if(content_type === 'image/jpeg'){
+          }else if(content_type === 'image/jpeg' || content_type === 'image/jpg'){
             file_ext = "jpeg";
           }
 

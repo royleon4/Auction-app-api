@@ -18,7 +18,7 @@ exports.create = function(req, res){
       let user = Object.assign({}, req.body);
 
       if(!emailvalidator.validate(user['email']) || user['password'].length == 0){
-        log.warn(`user.controller.create: failed validation ${JSON.stringify(user)}: ${err}`);
+        log.warn(`user.controller.create: failed validation ${JSON.stringify(user)}`);
         res.status(400).send('Malformed request');
       }else{
         users.insert(user, function(err, id){

@@ -7,25 +7,114 @@ const dateFormat = require('dateformat');
  *
  */
 const getAll = function(options, done){
-    // TODO: parse options for server side searching
+    let startindex = options.startIndex;
+    let count = options.count;
+    let q = options.q;
+    let categoryid = options.categoryid;
+    let seller = options.seller;
+    let bidder = options.bidder;
 
-    let query = "SELECT a.auction_id AS id, c.category_title AS categoryTitle, c.category_id AS categoryId, a.auction_title AS title, a.auction_reserveprice AS reservePrice, a.auction_startingdate AS startDateTime, a.auction_endingdate AS endDateTime, MAX(b.bid_amount) AS currentBid FROM auction a, category c, bid b WHERE a.auction_categoryid = c.category_id AND a.auction_id = b.bid_auctionid GROUP BY a.auction_id";
+    let values = [];
+    let query =
+        "SELECT a.*, c.category_title  " +
+        "FROM auction a " +
+        "LEFT JOIN category c " +
+        "ON a.auction_categoryid = c.category_id " +
+        "WHERE a.auction_id > -1";
+
+    if (q !== undefined) {
+        values.push("%" + q + "%");
+        query += " AND a.auction_title LIKE ?";
+        //console.log(query);
+    }
+
+    if (categoryid !== undefined && categoryid == parseInt(categoryid, 10)  && categoryid > 0) {
+        values.push(categoryid);
+        query += " AND a.auction_categoryid = ?";
+    }
+
+    if (seller !== undefined && seller == parseInt(seller, 10)  && seller > 0) {
+        values.push(seller);
+        query += ' AND a.auction_userid = ?';
+    }
+
+    if (bidder !== undefined && bidder == parseInt(bidder, 10)  && bidder > 0) {
+        values.push(bidder);
+        query = sql.substring(0, 106) + "LEFT JOIN bid b ON a.auction_id = b.bid_auctionid " + sql.substring(106,);
+        query = sql.substring(0, 29) + ", b.bid_amount " + sql.substring(29,);
+        query += ' AND b.bid_userid = ? AND a.auction_id = b.bid_auctionid AND b.bid_amount = (SELECT max(bid_amount) FROM bid WHERE bid_auctionid = a.auction_id)';
+    }
+
+    query += ' order by auction_startingdate DESC';
+
+    if ( count !== undefined && count == parseInt(count, 10)  && count > 0) {
+        query += " LIMIT " + count;
+    }
+
+    if (startindex !== undefined && startindex == parseInt(startindex, 10)  && startindex > 0) {
+        query +=" OFFSET " + startindex;
+    }
+
 
     db.get_pool().query(
         query,
-        function(err, auctions){
-            if (err)
-                return done(err);
+        values,
+        function(err, rows){
+            if (err || !rows) return done(err);
 
-            // TODO: convert all times to ints
-            for(let key in auctions){
-              auctions[key]['startDateTime'] = Date.parse(auctions[key]['startDateTime']);
-              auctions[key]['endDateTime'] = Date.parse(auctions[key]['endDateTime']);
+            //console.log(rows);
+
+            if(rows.length == 0){
+              //console.log("empty");
+              return done(false, rows)
+            }else{
+              let values = [];
+
+              for(let row of rows){
+                if(!values.includes(row.auction_id)){
+                  values.push(row.auction_id);
+                }
+              }
+
+              let auction_bids_query = "SELECT max(bid_amount) as max, bid_auctionid, bid_userid from bid WHERE bid_auctionid IN (?)";
+
+              db.get_pool().query(auction_bids_query, values, function (err, bids) {
+                if(err) return done(err, false);
+
+                let auction_results = [];
+
+                for(let row of rows){
+                  let auction_result = {
+                    "id": row.auction_id,
+                    "categoryTitle": row.category_title,
+                    "categoryId": row.auction_categoryid,
+                    "title": row.auction_title,
+                    "reservePrice": row.auction_reserveprice ,
+                    "startDateTime": Date.parse(row.auction_startingdate),
+                    "endDateTime": Date.parse(row.auction_endingdate),
+                    "currentBid": row.auction_startingprice
+                  }
+
+                  let id = row.auction_id;
+
+                  if(row.bid_amount !== undefined){
+                    auction_result.currentBid = row.bid_amount;
+                  }
+
+                  for(let bid of bids){
+                    if(bid.bid_auctionid == id){
+                      if(bid.bid_amount > auction_result.currentBid){
+                        auction_result.currentBid = bid.bid_amount;
+                      }
+                    }
+                  }
+                  auction_results.push(auction_result);
+                }
+
+                return done(false, auction_results);
+              });
+
             }
-
-
-
-            return done(err, auctions);
         }
     )
 };

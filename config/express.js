@@ -4,7 +4,8 @@ const express = require('express'),
 module.exports = function(){
 	const app = express()
 
-	app.use(bodyParser.json());
+	app.use(bodyParser.json({limit: '50mb'}));
+	app.use(bodyParser());
 
 
 	app.get('/', function(req, res){
