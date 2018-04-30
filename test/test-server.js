@@ -1,3 +1,8 @@
+/*
+    This was just me messing about. Use Austens latest tests if you want to test the app
+**/ 
+
+
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 
@@ -5,7 +10,7 @@ const should = chai.should();
 
 chai.use(chaiHttp);
 
-const server_url = "http://csse-s365.canterbury.ac.nz:5470/api/v1";
+const server_url = "http://csse-s365.canterbury.ac.nz:your_port_number/api/v1";
 
 describe('Server check', function(){
 	describe('GET /api/v1/status', function(){
