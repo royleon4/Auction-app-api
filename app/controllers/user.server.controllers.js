@@ -34,50 +34,47 @@ exports.create = function(req, res){
 }
 
 exports.login = function(req, res){
-    validator.areValidParameters(req.query, schema.paths['/users/login'].post.parameters)
-        .then(function(){
-                //console.log("hello");
-                //log.warn(`success ${JSON.stringify(req.body)}`);
+    if(!validator.isValidSchema(req.body, 'components.schemas.LoginUser')){
+      log.warn(`users.controller.login: bad request ${JSON.stringify(req.body)}`);
+      res.sendStatus(400);
+    }else{
+      //console.log("hello");
+      //log.warn(`success ${JSON.stringify(req.body)}`);
 
-                let username = '';
-                let email = '';
-                let password = req.query.password;
+      let username = '';
+      let email = '';
+      let password = req.body.password;
 
-                //res.status(200).json({username:username,email:email,password:password});
+      //res.status(200).json({username:username,email:email,password:password});
 
-                //check these parameters manually as swagger doesn't allow for oneOf type semantics so email and username are given as optional
-                if (req.query.hasOwnProperty('username')) username = req.query.username;
-                if (req.query.hasOwnProperty('email')) email = req.query.email;
+      //check these parameters manually as swagger doesn't allow for oneOf type semantics so email and username are given as optional
+      if (req.body.hasOwnProperty('username')) username = req.body.username;
+      if (req.body.hasOwnProperty('email')) email = req.body.email;
 
-                if(username == "" && email == ""){
-                  res.status(400).send('Invalid username/email/password supplied');
-                }else{
-                  users.authenticate(username, email, password, function(err, id){
-                      //console.log(err, id);
-                      if(err){
-                          log.warn("Here: " + err);
-                          res.status(400).send('Invalid username/email/password supplied');
-                      } else {
-                          users.getToken(id, function(err, token){
-                              /// return existing token if already set (don't modify tokens)
-                              if (token){
-                                  return res.send({id: id, token: token});
-                              } else {
-                                  // but if not, complete login by creating a token for the user
-                                  users.setToken(id, function(err, token){
-                                      res.send({id: id, token: token});
-                                  });
-                              }
-                          });
-                      }
-                  });
-                }
-        })
-        .catch(function(err){
-            //console.log(err);
-            log.warn(`users.controller.login: bad request ${JSON.stringify(req.body)}`);
-            res.sendStatus(400);
+      if(username == "" && email == ""){
+        res.status(400).send('Invalid username/email/password supplied');
+      }else{
+        users.authenticate(username, email, password, function(err, id){
+            //console.log(err, id);
+            if(err){
+                log.warn("Here: " + err);
+                res.status(400).send('Invalid username/email/password supplied');
+            } else {
+                users.getToken(id, function(err, token){
+                    /// return existing token if already set (don't modify tokens)
+                    if (token){
+                        return res.send({id: id, token: token});
+                    } else {
+                        // but if not, complete login by creating a token for the user
+                        users.setToken(id, function(err, token){
+                            res.send({id: id, token: token});
+                        });
+                    }
+                });
+            }
         });
+      }
+    }
 }
 
 
