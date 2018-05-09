@@ -39,10 +39,10 @@ const getAll = function(options, done){
     }
 
     if (bidder !== undefined && bidder == parseInt(bidder, 10)  && bidder > 0) {
-        values.push(bidder);
-        query = sql.substring(0, 106) + "LEFT JOIN bid b ON a.auction_id = b.bid_auctionid " + sql.substring(106,);
-        query = sql.substring(0, 29) + ", b.bid_amount " + sql.substring(29,);
-        query += ' AND b.bid_userid = ? AND a.auction_id = b.bid_auctionid AND b.bid_amount = (SELECT max(bid_amount) FROM bid WHERE bid_auctionid = a.auction_id)';
+        // values.push(bidder);
+        // query = query.substring(0, 106) + "LEFT JOIN bid b ON a.auction_id = b.bid_auctionid " + query.substring(106,);
+        // query = query.substring(0, 29) + ", b.bid_amount " + query.substring(29,);
+        // query += ' AND b.bid_userid = ? AND a.auction_id = b.bid_auctionid AND b.bid_amount = (SELECT max(bid_amount) FROM bid WHERE bid_auctionid = a.auction_id)';
     }
 
     query += ' order by auction_startingdate DESC';
@@ -249,11 +249,28 @@ const alter = function(id, auction, done){
     );
 };
 
+/**
+* Get all categories
+*/
+const get_categories = function(done){
+  db.get_pool().query(
+      'SELECT category_id AS categoryId, category_title AS categoryTitle, category_description AS categoryDescription FROM category',
+      function(err, results){
+          if (err){
+            return done(err, false);
+          }else{
+            return done(false, results)
+          }
+      }
+  );
+};
+
 module.exports = {
     getAll: getAll,
     insert: insert,
     getBids: get_bids,
     addBid: add_bid,
     getOne: get_one,
-    alter: alter
+    alter: alter,
+    getCategories: get_categories
 }

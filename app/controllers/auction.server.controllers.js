@@ -3,7 +3,7 @@ const   auctions = require('../models/auction.server.models'),
         log = require('../lib/logger')(),
         validator = require('../lib/validator'),
         config = require('../../config/config.js'),
-        schema = require('../../config/seng365-2018_auction_0.0.7_swagger.json'),
+        schema = require('../../config/seng365-2018_auction_0.0.9_swagger.json'),
         fs = require('fs'),
         path = require('path'),
         app_dir = path.dirname(require.main.filename);
@@ -423,8 +423,8 @@ exports.list_photos = function(req, res){
     }else{
       // Its found a JPEG
       res.set("Content-Type", 'image/jpeg');
-
       res.sendFile(check_path_jpeg);
+
     }
   });
 }
@@ -463,9 +463,16 @@ exports.add_photo = function(req, res){
           }
           if (file_ext === '') {console.log('file_ext is empty')};
           console.log('add_photo:', auction_id + file_ext, 'user_id', owner_id);
-          req.pipe(fs.createWriteStream('./uploads/' + auction_id + '.' + file_ext));
 
-          res.sendStatus(201);
+          try{
+            req.pipe(fs.createWriteStream('./uploads/' + auction_id + '.' + file_ext));
+
+            res.sendStatus(201);
+          }catch(e){
+            console.log("error posting image")
+            console.log(e);
+          }
+
 
         }
       }
@@ -516,5 +523,20 @@ exports.delete_photo = function(req, res){
         }
       }
     });
+  });
+}
+
+/**
+  Get all categories
+*/
+exports.get_categories = function(req, res){
+  console.log("getting categories...");
+  auctions.getCategories(function(err, results){
+      if (err){
+          log.warn(`auctions.controller.get_categories: model returned error: ${err}`);
+          return res.sendStatus(500);
+      }else{
+        return res.status(200).json(results);
+      }
   });
 }

@@ -12,15 +12,15 @@ let config = convict({
             },
             user: {
                 format: String,
-                default: 'username'
+                default: 'coscc770'
             },
             password: {
                 format: String,
-                default: 'password'
+                default: 'LeftoverMuddles8410'
             },
             database: {
                 format: String,
-                default: 'username'
+                default: 'coscc770'
             },
             multipleStatements:{
                 format: Boolean,

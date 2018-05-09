@@ -7,7 +7,7 @@
   ],
   "info": {
     "description": "",
-    "version": "0.0.6",
+    "version": "0.0.9",
     "title": "Auction API for SENG365 2018 Assignments"
   },
   "tags": [
@@ -39,7 +39,7 @@
             "description": "Bad request."
           },
           "500": {
-            "description" : "Internal server error"
+            "description": "Internal server error"
           }
         }
       }
@@ -63,7 +63,7 @@
         }
       }
     },
-    "/auctions" : {
+    "/auctions": {
       "get": {
         "tags": [
           "auctions"
@@ -75,8 +75,8 @@
             "name": "startIndex",
             "description": "Number of items to skip before returning result",
             "schema": {
-              "type" : "integer",
-              "minimum" : 0
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -99,10 +99,10 @@
           {
             "in": "query",
             "name": "category-id",
-            "description" : "ID for the category.",
+            "description": "ID for the category.",
             "schema": {
-              "type" : "integer",
-              "minimum" : 0
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -110,8 +110,8 @@
             "name": "seller",
             "description": "Only return auctions with this id as a seller",
             "schema": {
-              "type" : "integer",
-              "minimum" : 0
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -119,8 +119,8 @@
             "name": "bidder",
             "description": "Only return auctions which have a bid by this id",
             "schema": {
-              "type" : "integer",
-              "minimum" : 0
+              "type": "integer",
+              "minimum": 0
             }
           },
           {
@@ -128,8 +128,8 @@
             "name": "winner",
             "description": "Only return auctions which were won by this id",
             "schema": {
-              "type" : "integer",
-              "minimum" : 0
+              "type": "integer",
+              "minimum": 0
             }
           }
         ],
@@ -209,7 +209,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref" : "#/components/schemas/id"
+                  "$ref": "#/components/schemas/id"
                 }
               }
             }
@@ -239,8 +239,8 @@
             "description": "auction id",
             "required": true,
             "schema": {
-              "type" : "integer",
-              "minimum" : 0
+              "type": "integer",
+              "minimum": 0
             }
           }
         ],
@@ -287,8 +287,8 @@
             "description": "Id of the auction to update",
             "required": true,
             "schema": {
-              "type" : "integer",
-              "minimum" : 0
+              "type": "integer",
+              "minimum": 0
             }
           }
         ],
@@ -340,8 +340,8 @@
           "404": {
             "description": "Not found."
           },
-          "500" : {
-            "description" : "Internal server error"
+          "500": {
+            "description": "Internal server error"
           }
         }
       }
@@ -354,8 +354,8 @@
           "description": "auction id",
           "required": true,
           "schema": {
-            "type" : "integer",
-            "minimum" : 0
+            "type": "integer",
+            "minimum": 0
           }
         }
       ],
@@ -423,6 +423,32 @@
         }
       }
     },
+    "/categories": {
+      "get": {
+        "tags": [
+          "auctions"
+        ],
+        "summary": "Get all categories",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/getCategories"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
     "/auctions/{id}/photos": {
       "parameters": [
         {
@@ -431,8 +457,8 @@
           "description": "Id of the auction",
           "required": true,
           "schema": {
-            "type" : "integer",
-            "minimum" : 0
+            "type": "integer",
+            "minimum": 0
           }
         }
       ],
@@ -517,8 +543,7 @@
           "required": true
         }
       },
-
-      "delete" : {
+      "delete": {
         "tags": [
           "photos"
         ],
@@ -540,7 +565,6 @@
           }
         }
       }
-
     },
     "/auctions/{auction-id}/photos/{photo-id}": {
       "parameters": [
@@ -550,8 +574,8 @@
           "description": "Id of the auction",
           "required": true,
           "schema": {
-            "type" : "integer",
-            "minimum" : 0
+            "type": "integer",
+            "minimum": 0
           }
         },
         {
@@ -560,13 +584,13 @@
           "description": "Id of the photo",
           "required": true,
           "schema": {
-            "type" : "integer",
-            "minimum" : 0
+            "type": "integer",
+            "minimum": 0
           }
         }
       ],
       "get": {
-        "deprecated" : true,
+        "deprecated": true,
         "tags": [
           "photos"
         ],
@@ -601,7 +625,7 @@
         }
       },
       "put": {
-        "deprecated" : true,
+        "deprecated": true,
         "tags": [
           "photos"
         ],
@@ -615,8 +639,8 @@
           "201": {
             "description": "OK"
           },
-          "400" :{
-            "description" : "Bad request"
+          "400": {
+            "description": "Bad request"
           },
           "401": {
             "description": "Unauthorized"
@@ -624,7 +648,7 @@
           "404": {
             "description": "Not found"
           },
-          "500" : {
+          "500": {
             "description": "Internal server error"
           }
         },
@@ -650,7 +674,7 @@
         }
       },
       "delete": {
-        "deprecated" : true,
+        "deprecated": true,
         "tags": [
           "photos"
         ],
@@ -695,15 +719,15 @@
                 ],
                 "allOf": [
                   {
-                    "properties" : {
-                      "username" : {
-                        "type" : "string"
+                    "properties": {
+                      "username": {
+                        "type": "string"
                       },
-                      "givenName" : {
-                        "type" : "string"
+                      "givenName": {
+                        "type": "string"
                       },
-                      "familyName" : {
-                        "type" : "string"
+                      "familyName": {
+                        "type": "string"
                       }
                     }
                   },
@@ -724,7 +748,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref" : "#/components/schemas/id"
+                  "$ref": "#/components/schemas/id"
                 }
               }
             }
@@ -742,33 +766,6 @@
         ],
         "summary": "Log in user by username or email",
         "description": "One of username and email is required",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "query",
-            "description": "The username for login",
-            "schema": {
-              "type" : "string"
-            }
-          },
-          {
-            "name": "email",
-            "in": "query",
-            "description": "The users email for login",
-            "schema": {
-              "$ref" : "#/components/schemas/email"
-            }
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "description": "The password for login in clear text",
-            "required": true,
-            "schema": {
-              "$ref" : "#/components/schemas/password"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK",
@@ -825,8 +822,8 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type" : "integer",
-              "minimum" : 0
+              "type": "integer",
+              "minimum": 0
             }
           }
         ],
@@ -864,8 +861,8 @@
             "description": "user id to be updated",
             "required": true,
             "schema": {
-              "type" : "integer",
-              "minimum" : 0
+              "type": "integer",
+              "minimum": 0
             }
           }
         ],
@@ -1025,8 +1022,8 @@
                   }
                 }
               },
-              "startingBid" : {
-                "type" : "integer"
+              "startingBid": {
+                "type": "integer"
               },
               "currentBid": {
                 "type": "integer"
@@ -1089,7 +1086,7 @@
           }
         }
       },
-      "photoUris" : {
+      "photoUris": {
         "type": "array",
         "items": {
           "type": "string",
@@ -1116,14 +1113,14 @@
         "type": "array",
         "description": "history of bids on an Auction",
         "items": {
-          "type" : "object",
-          "required" : [
+          "type": "object",
+          "required": [
             "amount",
             "datetime",
             "buyerId",
             "buyerUsername"
           ],
-          "properties" : {
+          "properties": {
             "amount": {
               "type": "integer"
             },
@@ -1324,9 +1321,37 @@
             "type": "string"
           }
         },
-        "required":[
+        "required": [
           "password"
         ]
+      },
+      "getCategories": {
+        "title": "getCategories",
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": [
+            "id",
+            "title"
+          ],
+          "description": "summary data for an Auction",
+          "allOf": [
+            {
+              "type": "object",
+              "properties": {
+                "categoryId": {
+                  "type": "integer"
+                },
+                "categoryTitle": {
+                  "type": "string"
+                },
+                "categoryDescription": {
+                  "type": "string"
+                }
+              }
+            }
+          ]
+        }
       }
     },
     "securitySchemes": {
