@@ -14,6 +14,8 @@ const getAll = function(options, done){
     let seller = options.seller;
     let bidder = options.bidder;
 
+    let status = options.status;
+
     let values = [];
     let query =
         "SELECT a.*, c.category_title  " +
@@ -110,6 +112,37 @@ const getAll = function(options, done){
                   }
                   auction_results.push(auction_result);
                 }
+
+                /**
+                  FILTER BY STATUS - THIS IS A DIRTY HACK.
+                */
+
+
+                if (status !== undefined && status != "" && status != "all") {
+                  let results_to_return = []
+                  let now = new Date(parseInt((new Date).getTime()));
+
+                  for(let result of auction_results){
+                    let end_time = result.endDateTime;
+
+                    if(status == "active"){
+                      if(end_time > now){
+                        results_to_return.push(result);
+                      }
+                    }else if(status == "expired"){
+                      if(end_time <= now){
+                        results_to_return.push(result);
+                      }
+                    }else{
+                      results_to_return.push(result);
+                    }
+                  }
+
+                  auction_results = results_to_return;
+                }    
+                /**
+                  DELETE FROM ABOVE COMMENT TO HERE TO REMOVE
+                */
 
                 return done(false, auction_results);
               });

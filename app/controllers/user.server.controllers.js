@@ -2,7 +2,7 @@ const users = require('../models/user.server.models'),
   log = require('../lib/logger')(),
   validator = require('../lib/validator'),
   config = require('../../config/config.js'),
-  schema = require('../../config/seng365-2018_auction_0.0.9_swagger.json'),
+  schema = require('../../config/seng365-2018_auction_0.0.10_swagger.json'),
   emailvalidator = require("email-validator");
 
 
