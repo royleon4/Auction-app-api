@@ -7,7 +7,7 @@
   ],
   "info": {
     "description": "",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "title": "Auction API for SENG365 2018 Assignments"
   },
   "tags": [
@@ -130,6 +130,14 @@
             "schema": {
               "type": "integer",
               "minimum": 0
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "description": "Return auctions with a certain status. Can be 'all', 'active', 'expired', 'upcoming' or 'won'",
+            "schema": {
+              "type": "string"
             }
           }
         ],

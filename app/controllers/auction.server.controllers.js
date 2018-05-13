@@ -3,7 +3,7 @@ const   auctions = require('../models/auction.server.models'),
         log = require('../lib/logger')(),
         validator = require('../lib/validator'),
         config = require('../../config/config.js'),
-        schema = require('../../config/seng365-2018_auction_0.0.10_swagger.json'),
+        schema = require('../../config/seng365-2018_auction_0.0.11_swagger.json'),
         fs = require('fs'),
         path = require('path'),
         app_dir = path.dirname(require.main.filename);
@@ -13,27 +13,35 @@ const   auctions = require('../models/auction.server.models'),
  * list all auctions
  */
 exports.list = function(req, res){
+    console.log("get all auctions...");
     validator.areValidParameters(req.query, schema.paths['/auctions'].get.parameters)
         .then(function(){
-            auctions.getAll(req.query, function(err, auctions){
+            auctions.getAll(req.query, function(err, results){
 
-                if(err || !auctions) return res.sendStatus(400);
+                if(err || !results){
+                  // console.log("err", err);
+                  // console.log("results", results);
+                  return res.sendStatus(400);
+                }
 
-                if(auctions.length == 0){
+                if(results.length == 0){
                   //console.log("empty");
-                  return res.status(200).json(auctions);
+                  return res.status(200).json(results);
                 }else{
-                    if (!validator.isValidSchema(auctions, 'components.schemas.auctionsOverview')) {
-                        log.warn(JSON.stringify(auctions, null, 2));
+                    if (!validator.isValidSchema(results, 'components.schemas.auctionsOverview')) {
+                        log.warn(JSON.stringify(results, null, 2));
                         log.warn(validator.getLastErrors());
                         return res.sendStatus(500);
                     }else{
-                      return res.status(200).json(auctions);
+                      return res.status(200).json(results);
                     }
                 }
             })
         })
-        .catch(() => res.sendStatus(400))
+        .catch(function(err){
+          //console.log(err);
+          res.sendStatus(400)
+        })
 }
 
 /**
