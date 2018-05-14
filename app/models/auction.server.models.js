@@ -219,8 +219,19 @@ const get_one = function(auction_id, done) {
  */
 const alter = function(id, auction, done){
 
+    console.log(auction);
+
     let query_string = 'UPDATE auction SET auction_categoryid=?, auction_title=?, auction_reserveprice=?, auction_startingdate=?, auction_endingdate=?, auction_description=?, auction_startingprice=? WHERE auction_id=?';
-    let values = [auction.category_id, auction.title, auction.reserve_price, auction.start_date_time, auction.end_date_time, auction.description, auction.starting_bid, id];
+    let values = [
+      auction.category_id,
+      auction.title,
+      auction.reserve_price,
+      new Date(parseInt(auction.start_date_time)),
+      new Date(parseInt(auction.end_date_time)),
+      auction.description,
+      auction.starting_bid,
+      id
+    ];
 
      db.get_pool().query(query_string,
         values,

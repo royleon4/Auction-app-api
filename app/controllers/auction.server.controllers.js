@@ -342,13 +342,13 @@ exports.update = function(req, res){
                     if(req.body.hasOwnProperty('startDateTime')){
                         start_date_time = req.body['startDateTime'];
                     }else{
-                        start_date_time = result['auction_startingdate'];
+                        start_date_time = Date.parse(result['auction_startingdate']);
                     }
 
                     if(req.body.hasOwnProperty('endDateTime')){
                         end_date_time = req.body['endDateTime'];
                     }else{
-                        end_date_time = result['auction_endingdate'];
+                        end_date_time = Date.parse(result['auction_endingdate']);
                     }
 
                     if(req.body.hasOwnProperty('description')){
