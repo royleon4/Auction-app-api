@@ -133,6 +133,8 @@ exports.add_bid = function(req, res){
 
         let end_date_time = Date.parse(result['auction_endingdate']);
 
+        let starting_amount = result['auction_startingprice'];
+
         console.log("*************");
         console.log("end_date", result['auction_endingdate'], end_date_time);
         console.log("now", date_time_now);
@@ -162,7 +164,7 @@ exports.add_bid = function(req, res){
                     }
                 }
 
-                if (amount <= max_bid) {
+                if (amount <= max_bid || amount <= starting_amount) {
                     log.warn(`auctions.controller.add_bids: bid is less than or equal to current amount`);
                     res.sendStatus(400);
                 } else {
